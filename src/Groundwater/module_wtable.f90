@@ -117,14 +117,14 @@ CONTAINS
 !Total groundwater balance in the cell
           totwater = qlat(i, j) - deeprech(i, j)
           if (qlat(i, j) .ne. qlat(i, j)) write (6, *) 'gran problema!', wtd(i, j), qlat(i, j), i, j
-          if (i .eq. 54 .and. j .eq. 49) write (6, *) 'mirar antes updatewtd', wtd(i, j), qlat(i, j), deeprech(i, j), totwater
+          ! if (i .eq. 54 .and. j .eq. 49) write (6, *) 'mirar antes updatewtd', wtd(i, j), qlat(i, j), deeprech(i, j), totwater
 
           call update_wtd(nzg, slz, dz, wtd(i, j), qspring, totwater, smoi(1, i, j) &
                           , smoieq(1, i, j), soiltxt(1, i, j), smoiwtd(i, j))
 
           qsprings(i, j) = qsprings(i, j) + qspring*1.e3
 
-          if (i .eq. 54 .and. j .eq. 49) write (6, *) 'mirar despues updatewtd', wtd(i, j)
+          ! if (i .eq. 54 .and. j .eq. 49) write (6, *) 'mirar despues updatewtd', wtd(i, j)
 
         end if
       END DO
