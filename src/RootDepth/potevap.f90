@@ -331,11 +331,11 @@ subroutine POTEVAP_Shutteworth_Wallace(i, j, deltat, tempk, rad, rshort, press, 
 !pet_c = C_c * ( delta*rad + ( dens*cp*vpd - delta*ra_c*Rn_s ) / (ra_a+ra_c) ) / (delta + gamma*(1.+rs_c/(ra_a+ra_c)) )
 !pet_c = max( deltat * pet_c / lambda , 0.)
     pet_c = (delta*rad + (dens*cp*vpd - delta*ra_c*Rn_s)/(ra_a + ra_c))
+    pet_s = (delta*rad + (dens*cp*vpd - delta*ra_s*(rad - Rn_s))/(ra_a + ra_s))
 
 !pet_s = C_s * ( delta*rad + ( dens*cp*vpd - delta*ra_s*(rad-Rn_s) ) / (ra_a+ra_s) ) / (delta + gamma*(1.+rs_s/(ra_a+ra_c)) )
 !pet_s = max( deltat * pet_s / lambda , 0.)
 !pet_s = ( delta*rad + ( dens*cp*vpd - delta*ra_s*(rad-Rn_s) ) / (ra_a+ra_s) ) / (delta + gamma*(1.+rs_s/(ra_a+ra_c)) )
-    pet_s = (delta*rad + (dens*cp*vpd - delta*ra_s*(rad - Rn_s))/(ra_a + ra_s))
 
 !if(i.eq.29.and.j.eq.19)write(6,*)'mirar pet_s',pet_s,rad,Rn_s,ra_s,ra_a
 

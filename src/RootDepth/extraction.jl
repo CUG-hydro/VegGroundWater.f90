@@ -1,20 +1,24 @@
-function extraction(i, j, nzg, slz, dz, deltat, soiltxt, wtd, smoi, smoiwtd,
-  delta, gamma, lambda, lai, ra_a, ra_c, rs_c_factor, R_a, R_s, petfactor_s, petfactor_c, pet_s,
-  pet, watdef, dsmoi, dsmoideep,
+function extraction(i, j, nzg, slz, dz, deltat, soiltxt, wtd, smoi, 
+  # smoiwtd,
+  delta, gamma, lambda, lai, ra_a, ra_c, rs_c_factor, R_a, R_s, petfactor_s, petfactor_c, 
+  # pet_s, pet, watdef, 
+  dsmoi, 
+  # dsmoideep,
   inactivedays, maxinactivedays, fieldcp, hhveg, fdepth, icefac)
 
   # Constants
-  potleaf = -153.0  # now equal to wilting point
-  potwilt = -153.0  # matric potential at wilting point
-  potfc = -3.366    # matric potential at field capacity
+  
+  ψ_leaf = -153.0  # now equal to wilting point
+  ψ_wp = -153.0    # matric potential at wilting point
+  ψ_fc = -3.366    # matric potential at field capacity
 
   # Initialize arrays and variables
+  # easydeep = 0.0
+  # dzwtd = 0.0
+  # dz3 = 0.0
   easy = zeros(Float64, nzg)
-  easydeep = 0.0
-  dzwtd = 0.0
   rootmask = zeros(Int, nzg)
   dz2 = copy(dz)
-  dz3 = 0.0
   rootactivity = zeros(Float64, nzg)
   vctr4 = zeros(Float64, nzg)
   maxwat = zeros(Float64, nzg)
@@ -24,9 +28,7 @@ function extraction(i, j, nzg, slz, dz, deltat, soiltxt, wtd, smoi, smoiwtd,
   # Calculate where the water table is
   k = 1
   for k = 1:nzg
-    if wtd < slz[k]
-      break
-    end
+    wtd < slz[k] && break
   end
   iwtd = k
   kwtd = k - 1
@@ -38,9 +40,7 @@ function extraction(i, j, nzg, slz, dz, deltat, soiltxt, wtd, smoi, smoiwtd,
   # Calculate lowest layer of the root zone
   k = 1
   for k = 1:nzg
-    if inactivedays[k] <= maxinactivedays
-      break
-    end
+    inactivedays[k] <= maxinactivedays && break
   end
   kroot = k - 1
 
@@ -59,20 +59,15 @@ function extraction(i, j, nzg, slz, dz, deltat, soiltxt, wtd, smoi, smoiwtd,
 
     # Calculate moisture potential
     smoisat = theta_sat(nsoil) * max(min(exp((vctr4[k] + 1.5) / fdepth), 1.0), 0.1)
-    psisat = slpots(nsoil) * min(max(exp(-(vctr4[k] + 1.5) / fdepth), 1.0), 10.0)
-    pot = psisat * (smoisat / smoi[k])^slbs(nsoil)
+    ψ_sat = slpots(nsoil) * min(max(exp(-(vctr4[k] + 1.5) / fdepth), 1.0), 10.0)
+    pot = ψ_sat * (smoisat / smoi[k])^slbs(nsoil)
 
-    if icefac[k] == 0
-      soilfactor = 1.0
-    else
-      soilfactor = 0.0
-    end
-
-    easy[k] = max(-(potleaf - pot) * soilfactor / (hveg - vctr4[k]), 0.0)
+    soilfactor = icefac[k] == 0 ? 1.0 : 0.0
+    easy[k] = max(-(ψ_leaf - pot) * soilfactor / (hveg - vctr4[k]), 0.0)
   end
 
+  # dsmoideep = 0.0
   dsmoi .= 0.0
-  dsmoideep = 0.0
   watdef = 0.0
 
   # Find maximum easiness among active root layers
@@ -121,9 +116,9 @@ function extraction(i, j, nzg, slz, dz, deltat, soiltxt, wtd, smoi, smoiwtd,
     end
 
     smoisat = theta_sat(nsoil) * max(min(exp((vctr4[k] + 1.5) / fdepth), 1.0), 0.1)
-    psisat = slpots(nsoil) * min(max(exp(-(vctr4[k] + 1.5) / fdepth), 1.0), 10.0)
-    smoimin = smoisat * (psisat / potwilt)^(1.0 / slbs(nsoil))
-    smoifc = smoisat * (psisat / potfc)^(1.0 / slbs(nsoil))
+    ψ_sat = slpots(nsoil) * min(max(exp(-(vctr4[k] + 1.5) / fdepth), 1.0), 10.0)
+    smoimin = smoisat * (ψ_sat / ψ_wp)^(1.0 / slbs(nsoil))
+    smoifc = smoisat * (ψ_sat / ψ_fc)^(1.0 / slbs(nsoil))
 
     maxwat[k] = max((smoi[k] - smoimin) * dz[k], 0.0)  # max water that can be taken from a layer
 
@@ -188,7 +183,7 @@ function extraction(i, j, nzg, slz, dz, deltat, soiltxt, wtd, smoi, smoiwtd,
   if abs(watdef - transpwater) > 1.0e9
     println("algo no esta bien ", i, " ", j, " ", transpwater * 1.0e3, " ", watdef * 1.0e3)
   end
-
-  # Now total rootactiviy is dsmoi/totwater normalized by soil layer depth
-  # Return dsmoi (total water taken from each layer) to do calculation later and update soil moisture
 end
+
+# Now total rootactiviy is dsmoi/totwater normalized by soil layer depth
+# Return dsmoi (total water taken from each layer) to do calculation later and update soil moisture

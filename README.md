@@ -17,3 +17,7 @@ filerivers = 'RIVERPARAMETERS/riverparameters_definitive_yama.dat'
 
 ## Variables 
 - `vctr4`: 
+
+## Reference
+
+https://www.deepwiki.com/CUG-hydro/VegGroundWater.f90

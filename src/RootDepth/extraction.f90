@@ -162,7 +162,7 @@ subroutine EXTRACTION(i, j, nzg, slz, dz, deltat, soiltxt, wtd, smoi, smoiwtd &
   end do
 
   if (rootsmoi .le. 0) then
-    fswp = 0.
+    fswp = 0. ! 水分限制因子
   elseif (rootsmoi/rootfc .le. 1) then
     fswp = rootsmoi/rootfc
   else
@@ -170,13 +170,13 @@ subroutine EXTRACTION(i, j, nzg, slz, dz, deltat, soiltxt, wtd, smoi, smoiwtd &
   end if
 
   if (fswp .eq. 0.) then
-    rs_c = 5000.
+    rs_c = 5000. ! stomatal resistance
   else
     rs_c = min(rs_c_factor/fswp, 5000.)
   end if
 
   nsoil = soiltxt(2)
-  rs_s = 33.5 + 3.5*(theta_sat(nsoil)/smoi(nzg))**2.38
+  rs_s = 33.5 + 3.5*(theta_sat(nsoil)/smoi(nzg))**2.38 !soil resistance
 
   R_c = (delta + gamma)*ra_c + gamma*rs_c
   R_s = R_s + gamma*rs_s
@@ -185,7 +185,6 @@ subroutine EXTRACTION(i, j, nzg, slz, dz, deltat, soiltxt, wtd, smoi, smoiwtd &
   C_s = 1./(1.+R_a*R_s/(R_c*(R_s + R_a)))
 
 !if(i.eq.29.and.j.eq.19)write(6,*)'mirar C_c,C_s,lai',C_c,C_c,lai
-
   if (lai .lt. 0.001) then
     C_c = 0.
 !             C_s=1.
