@@ -35,10 +35,9 @@ function update_wtb_qlat(nzg, slz, dz, wtd, qspring, qlat, smoi, smoieq, soiltex
             smoi[kwtd] = smoisat
             qlatflux[kwtd] += maxwatup
             totwater -= maxwatup
-            for k in iwtd:(nzg + 1)
+            for k in iwtd:nzg
                 wtd = slz[k]
                 iwtd = k + 1
-                k == nzg + 1 && break
                 nsoil = soiltxt[k]
                 smoisat = theta_sat(nsoil) * max(min(exp((vctr4[k] + 1.5) / fdepth), 1.0), 0.1)
                 maxwatup = dz[k] * (smoisat - smoi[k])
@@ -57,6 +56,9 @@ function update_wtb_qlat(nzg, slz, dz, wtd, qspring, qlat, smoi, smoieq, soiltex
                     qlatflux[k] += maxwatup
                     totwater -= maxwatup
                 end
+            end
+            if totwater > 0.0
+                wtd = slz[nzg + 1]
             end
         end
         qspring = totwater

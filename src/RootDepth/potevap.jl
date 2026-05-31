@@ -49,7 +49,8 @@ function potevap_penman_monteith(i, j, tempk, rad, rshort, press, qair, wind, la
     if slai * frad * fswp * fvpd == 0.0
         rs = 5000.0
     else
-        rs = min(rl[round(Int, veg)] / (slai * frad * fswp * fvpd), 5000.0)
+        veg_idx = clamp(round(Int, veg), 1, length(rl))
+        rs = min(rl[veg_idx] / (slai * frad * fswp * fvpd), 5000.0)
     end
 
     pet = (delta * rad + dens * cp * vpd / ra) / (delta + γ * (1.0 + rs / ra))
@@ -136,7 +137,8 @@ function potevap_shutteworth_wallace(i, j, deltat, tempk, rad, rshort, press, qa
         c_d = hveg == 0.0 ? 1.4e-3 : (-1.0 + exp(0.909 - 3.03 * z0c / hveg))^4 / 4.0
         d0 = lai >= 4.0 ? max(hveg - z0c / 0.3, 0.0) : 1.1 * hveg * log(1.0 + (c_d * lai)^0.25)
 
-        z0g = floodflag == 0 ? z0gr[round(Int, veg)] : z0gr[1]
+        idx = clamp(round(Int, veg), 1, length(rl))
+        z0g = floodflag == 0 ? z0gr[idx] : z0gr[1]
         z0 = min(0.3 * (hveg - d0), z0g + 0.3 * hveg * sqrt(c_d * lai))
         z0 = max(z0, z0g)
         ustar = vk * wind / log(10.0 / z0)
@@ -156,7 +158,6 @@ function potevap_shutteworth_wallace(i, j, deltat, tempk, rad, rshort, press, qa
         ra_s = hveg * exp(n) * (exp(-n * z0g / hveg) - exp(-n * (Z0 + dp) / hveg)) / (n * K_h)
 
         uc = ustar * log((hveg - d0) / z0) / vk
-        idx = round(Int, veg)
         wleaf = idx in (4, 5, 13, 20, 21) ? wmax[idx] * (1.0 - exp(-0.6 * lai)) : wmax[idx]
         rb = 100.0 * sqrt(wleaf / uc) / ((1.0 - exp(-n / 2.0)) * n)
         ra_c = lai > 0.1 ? rb * 0.5 / lai : 0.0
@@ -182,7 +183,7 @@ function potevap_shutteworth_wallace(i, j, deltat, tempk, rad, rshort, press, qa
         pet_w = 0.0
 
         if isnan(pet_c) || isnan(pet_s) || isnan(pet_i)
-            println("something wrong with pet: pet_c=", pet_c, " pet_s=", pet_s, " pet_i=", pet_i,
+            println("Warning: NaN detected in potential evapotranspiration: pet_c=", pet_c, " pet_s=", pet_s, " pet_i=", pet_i,
                     " ra_a=", ra_a, " ra_c=", ra_c, " rs_c=", rs_c, " ra_s=", ra_s)
             println("forcings: i=", i, " j=", j, " tempk=", tempk, " rad=", rad, " rshort=", rshort,
                     " press=", press, " qair=", qair, " wind=", wind, " lai=", lai, " veg=", veg, " hhveg=", hhveg)

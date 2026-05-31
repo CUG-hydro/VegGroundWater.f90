@@ -10,8 +10,8 @@ function tridag(a, b, c, r, u, n)
         gam[j] = c[j - 1] / bet
         bet = b[j] - a[j] * gam[j]
         if bet == 0.0
-            println("tridag failed at j=", j, " b=", b[j], " a=", a[j], " gam=", gam[j])
-            error("tridag failed")
+            println("tridag failed at j=", j, "/", n, " b=", b[j], " a=", a[j], " gam=", gam[j])
+            error("tridag failed (singular or ill-conditioned tridiagonal matrix)")
         end
         u[j] = (r[j] - a[j] * u[j - 1]) / bet
     end

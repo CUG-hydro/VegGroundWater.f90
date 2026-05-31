@@ -73,7 +73,7 @@ function update_shallow_wtd(i, j, nzg, freedrain, slz, dz, soiltxt, smoieq, smoi
     end
 
     if wtd < slz[1]
-        println("Water table depth below minimum layer: wtd=", wtd, " i=", i, " j=", j)
+        println("Warning: water table depth below minimum layer: wtd=", wtd, " i=", i, " j=", j)
     end
 
     return wtd, rech
