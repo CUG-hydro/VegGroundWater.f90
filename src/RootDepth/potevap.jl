@@ -182,8 +182,10 @@ function potevap_shutteworth_wallace(i, j, deltat, tempk, rad, rshort, press, qa
         pet_w = 0.0
 
         if isnan(pet_c) || isnan(pet_s) || isnan(pet_i)
-            println("something wrong with pet ", pet_c, " ", pet_s, " ", pet_i, " ", ra_a, " ", ra_c, " ", rs_c, " ", ra_s, " ", 0.0)
-            println("forcings ", i, " ", j, " ", tempk, " ", rad, " ", rshort, " ", press, " ", qair, " ", wind, " ", lai, " ", veg, " ", hhveg)
+            println("something wrong with pet: pet_c=", pet_c, " pet_s=", pet_s, " pet_i=", pet_i,
+                    " ra_a=", ra_a, " ra_c=", ra_c, " rs_c=", rs_c, " ra_s=", ra_s)
+            println("forcings: i=", i, " j=", j, " tempk=", tempk, " rad=", rad, " rshort=", rshort,
+                    " press=", press, " qair=", qair, " wind=", wind, " lai=", lai, " veg=", veg, " hhveg=", hhveg)
         end
     end
 

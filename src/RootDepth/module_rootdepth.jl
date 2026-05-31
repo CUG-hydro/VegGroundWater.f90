@@ -45,13 +45,17 @@ function rootdepth(freedrain, imax, js, je, nzg, slz, dz, deltat, landmask, veg,
                    qrf, delsfcwat, icefactor, wtdflux, et_s_daily, et_c_daily, transptop, infilk)
 
     minpprate = 0.01
-    icefac = zeros(Int8, nzg)
+    icefac = zeros(Int8, max(nzg, 40))
 
     for j in (js + 1):(je - 1)
         for i in 1:imax
             landmask[i, j] == 0 && continue
 
-            icefac[26:40] .= icefactor[i, j, 26:40]
+            if nzg >= 40
+                icefac[26:40] .= icefactor[i, j, 26:40]
+            else
+                icefac .= 0
+            end
             floodflag = floodheight[i, j] > 0.05 ? 1 : 0
 
             delta, gamma, lambda, ra_a, ra_c, rs_c, R_a, R_s, petfactor_s, petfactor_c, petstep_w, petstep_i =
@@ -89,7 +93,7 @@ function rootdepth(freedrain, imax, js, je, nzg, slz, dz, deltat, landmask, veg,
                 extraction(i, j, nzg, slz, dz, deltat / steps, soiltxt[1, i, j], wtd[i, j], smoi[:, i, j],
                            delta, gamma, lambda, lai[i, j], ra_a, ra_c, rs_c, R_a, R_s, petfactor_s, petfactor_c,
                            petstep_s, petstep_c, watdef, dsmoi, inactivedays[:, i, j], maxinactivedays, fieldcp,
-                           hveg[i, j], fdepth[i, j], icefac)
+                           hveg[i, j], fdepth[i, j], icefac[1:nzg])
 
                 et_c[i, j] += petstep_c - watdef * 1.0e3
                 waterdeficit[i, j] += watdef * 1.0e3
@@ -100,7 +104,7 @@ function rootdepth(freedrain, imax, js, je, nzg, slz, dz, deltat, landmask, veg,
                 smoiwtd[i, j], wtd[i, j], rechstep, etstep_s, runoff, qrfcorrect = soilfluxes(
                     i, j, nzg, freedrain, deltat / steps, slz, dz, soiltxt[:, i, j], smoiwtd[i, j], dsmoi, dsmoideep,
                     smoi[:, i, j], wtd[i, j], 0.0, deeprech[i, j], ppdrip, petstep_s, 0.0, 0.0, flux, fdepth[i, j],
-                    qlatstep, qlatflux, qrfstep, 0.0, floodstep, icefac)
+                    qlatstep, qlatflux, qrfstep, 0.0, floodstep, icefac[1:nzg])
 
                 delsfcwat[i, j] -= max(floodstep - runoff, 0.0)
                 qsrun[i, j] += max(runoff - floodstep, 0.0)
