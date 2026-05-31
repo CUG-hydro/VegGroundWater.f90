@@ -38,7 +38,7 @@ include(joinpath(@__DIR__, "soilfluxes.jl"))
 include(joinpath(@__DIR__, "interception.jl"))
 include(joinpath(@__DIR__, "init_soil.jl"))
 
-function rootdepth(freedrain, imax, js, je, nzg, slz, dz, deltat, landmask, veg, hveg, soiltxt, wind, temp, qair, press, netrad, rshort,
+function rootdepth(freedrain, imax, jmax, nzg, slz, dz, deltat, landmask, veg, hveg, soiltxt, wind, temp, qair, press, netrad, rshort,
                    lai, precip, qsrun, smoi, smoieq, smoiwtd, wtd, waterdeficit, watext, watextdeep, rech, deeprech,
                    et_s, et_i, et_c, intercepstore, ppacum, pppendepth, pppendepthold,
                    qlat, qlatsum, qsprings, inactivedays, maxinactivedays, fieldcp, fdepth, steps, floodheight,
@@ -47,7 +47,7 @@ function rootdepth(freedrain, imax, js, je, nzg, slz, dz, deltat, landmask, veg,
     minpprate = 0.01
     icefac = zeros(Int8, max(nzg, 40))
 
-    for j in (js + 1):(je - 1)
+    for j in 2:(jmax - 1)
         for i in 1:imax
             landmask[i, j] == 0 && continue
 
