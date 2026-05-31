@@ -16,20 +16,6 @@ function rivers_kw_flood(imax, js, je, deltat, dtlr, fd, bfd, qnew, qs, qrf, del
     end
   end
 
-  if numtasks > 1
-    reqsu, reqsd, reqru, reqrd = sendborders(imax, js, je, qnew)
-  end
-
-  # make sure that the borders are received before calculating anything
-  if pid == 1
-    MPI_wait(reqru, status, ierr)
-  elseif pid == numtasks - 2
-    MPI_wait(reqrd, status, ierr)
-  elseif pid > 1 && pid < numtasks - 2
-    MPI_wait(reqru, status, ierr)
-    MPI_wait(reqrd, status, ierr)
-  end
-
   q .= qnew
   qin .= 0.0
 
@@ -146,30 +132,6 @@ function rivers_kw_flood(imax, js, je, deltat, dtlr, fd, bfd, qnew, qs, qrf, del
     end
   end
 
-  # before changing qnew make sure that the borders have been received
-  if pid == 1
-    MPI_wait(reqsu, status, ierr)
-  elseif pid == numtasks - 2
-    MPI_wait(reqsd, status, ierr)
-  elseif pid > 1 && pid < numtasks - 2
-    MPI_wait(reqsu, status, ierr)
-    MPI_wait(reqsd, status, ierr)
-  end
-
-  if numtasks > 1
-    reqsu, reqsd, reqru, reqrd = sendborders(imax, js, je, depth)
-  end
-
-  # make sure that the borders are received before calculating anything
-  if pid == 1
-    MPI_wait(reqru, status, ierr)
-  elseif pid == numtasks - 2
-    MPI_wait(reqrd, status, ierr)
-  elseif pid > 1 && pid < numtasks - 2
-    MPI_wait(reqru, status, ierr)
-    MPI_wait(reqrd, status, ierr)
-  end
-
   for j in js+1:je-1
     for i in 2:imax-1
       flowwidth = width[i, j]
@@ -211,14 +173,4 @@ function rivers_kw_flood(imax, js, je, deltat, dtlr, fd, bfd, qnew, qs, qrf, del
   end
 
   qmean .+= qnew .* dtlr
-
-  # before changing depth make sure that the borders have been received
-  if pid == 1
-    MPI_wait(reqsu, status, ierr)
-  elseif pid == numtasks - 2
-    MPI_wait(reqsd, status, ierr)
-  elseif pid > 1 && pid < numtasks - 2
-    MPI_wait(reqsu, status, ierr)
-    MPI_wait(reqsd, status, ierr)
-  end
 end

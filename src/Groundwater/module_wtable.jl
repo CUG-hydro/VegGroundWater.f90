@@ -2,7 +2,6 @@
 
 module ModuleWTable
 
-using ..module_parallel
 using ..module_rootdepth
 
 const pi4 = 4π
@@ -19,10 +18,6 @@ include("update_wtd.jl")
 function wtable(imax, jmax, js, je, nzg, slz, dz, area, soiltxt, wtd, bottomflux, rech, qslat, fdepth, topo, landmask, deltat,
                 smoi, smoieq, smoiwtd, qsprings)
 
-  if numtasks > 1
-    reqsu, reqsd, reqru, reqrd = sendborders(imax, js, je, wtd)
-  end
-
   # Calculate lateral flow
   qlat = zeros(eltype(wtd), size(wtd))
   klat = zeros(eltype(wtd), size(wtd))
@@ -31,16 +26,6 @@ function wtable(imax, jmax, js, je, nzg, slz, dz, area, soiltxt, wtd, bottomflux
       nsoil = soiltxt[1, i, j]
       klat[i, j] = Ksat(nsoil) * klatfactor(nsoil)
     end
-  end
-
-  # make sure that the borders are received before calculating lateral flow
-  if pid == 1
-    MPI_wait(reqru, status, ierr)
-  elseif pid == numtasks - 2
-    MPI_wait(reqrd, status, ierr)
-  elseif pid > 1 && pid < numtasks - 2
-    MPI_wait(reqru, status, ierr)
-    MPI_wait(reqrd, status, ierr)
   end
 
   lateralflow(imax, jmax, js, je, wtd, qlat, fdepth, topo, landmask, deltat, area, klat)
@@ -84,16 +69,6 @@ function wtable(imax, jmax, js, je, nzg, slz, dz, area, soiltxt, wtd, bottomflux
   end
 
   bottomflux .= 0.0
-
-  # before changing wtd make sure that the borders have been received
-  if pid == 1
-    MPI_wait(reqsu, status, ierr)
-  elseif pid == numtasks - 2
-    MPI_wait(reqsd, status, ierr)
-  elseif pid > 1 && pid < numtasks - 2
-    MPI_wait(reqsu, status, ierr)
-    MPI_wait(reqsd, status, ierr)
-  end
 
   # Now update water table and soil moisture
   for j in js+1:je-1

@@ -1,11 +1,6 @@
 # Translated from lateralflow.f90
 
 function lateral(imax, jmax, js, je, soiltxt, wtd, qlat, fdepth, topo, landmask, deltat, area, lats, dxy)
-  if numtasks > 1
-    reqsu, reqsd, reqru, reqrd = sendborders(imax, js, je, wtd)
-  end
-
-  # Calculate lateral flow
   qlat .= 0.0
   klat = zeros(eltype(wtd), size(wtd))
   for j in js:je
@@ -14,28 +9,7 @@ function lateral(imax, jmax, js, je, soiltxt, wtd, qlat, fdepth, topo, landmask,
       klat[i, j] = Ksat(nsoil) * klatfactor(nsoil)
     end
   end
-
-  # make sure that the borders are received before calculating lateral flow
-  if pid == 1
-    MPI_wait(reqru, status, ierr)
-  elseif pid == numtasks - 2
-    MPI_wait(reqrd, status, ierr)
-  elseif pid > 1 && pid < numtasks - 2
-    MPI_wait(reqru, status, ierr)
-    MPI_wait(reqrd, status, ierr)
-  end
-
   lateralflow4(imax, jmax, js, je, wtd, qlat, fdepth, topo, landmask, deltat, area, klat, lats, dxy)
-
-  # before changing wtd make sure that the borders have been received
-  if pid == 1
-    MPI_wait(reqsu, status, ierr)
-  elseif pid == numtasks - 2
-    MPI_wait(reqsd, status, ierr)
-  elseif pid > 1 && pid < numtasks - 2
-    MPI_wait(reqsu, status, ierr)
-    MPI_wait(reqsd, status, ierr)
-  end
 end
 
 function lateralflow(imax, jmax, js, je, wtd, qlat, fdepth, topo, landmask, deltat, area, klat)
