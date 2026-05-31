@@ -10,7 +10,7 @@ sendborders(args...) = (0, 0, 0, 0)
 sendbordersflood(args...) = (0, 0, 0, 0)
 Ksat(::Integer) = 10.0
 klatfactor(::Integer) = 1.0
-const pi4 = 3.1415927 * 4.0
+const pi4 = 4π
 
 include("../src/Groundwater/flowdir.jl")
 include("../src/Groundwater/GW2river.jl")

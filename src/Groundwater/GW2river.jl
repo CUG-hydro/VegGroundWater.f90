@@ -23,7 +23,7 @@ function gw2river(imax, js, je, nzg, slz, deltat, soiltxt, landmask, wtd, maxdep
         soilwatercap = -rcond * (wtd[i, j] - riversurface) * (deltat / area[i, j])
         qrf[i, j] = -max(min(soilwatercap, riverdepth[i, j]), 0.0) * min(width[i, j] * length[i, j] / area[i, j], 1.0)
       else
-        # 水位低于河床：与河道断连，仅按 Ksat 入渗
+        # Water table below riverbed: disconnected from channel, infiltration at Ksat only
         frac = min(width[i, j] * length[i, j] / area[i, j], 1.0)
         qrf[i, j] = -max(min(Ksat(nsoil) * deltat, rdepth), 0.0) * frac
       end

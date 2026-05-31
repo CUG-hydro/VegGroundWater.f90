@@ -5,7 +5,7 @@ module ModuleWTable
 using ..module_parallel
 using ..module_rootdepth
 
-const pi4 = 3.1415927 * 4.0
+const pi4 = 4π
 
 include("flowdir.jl")
 include("flooding.jl")
@@ -25,7 +25,6 @@ function wtable(imax, jmax, js, je, nzg, slz, dz, area, soiltxt, wtd, bottomflux
 
   # Calculate lateral flow
   qlat = zeros(eltype(wtd), size(wtd))
-  qlat .= 0.0
   klat = zeros(eltype(wtd), size(wtd))
   for j in js:je
     for i in 1:imax
@@ -50,7 +49,6 @@ function wtable(imax, jmax, js, je, nzg, slz, dz, area, soiltxt, wtd, bottomflux
 
   # now calculate deep recharge
   deeprech = zeros(eltype(wtd), size(wtd))
-  deeprech .= 0.0
 
   for j in js+1:je-1
     for i in 1:imax
@@ -103,7 +101,7 @@ function wtable(imax, jmax, js, je, nzg, slz, dz, area, soiltxt, wtd, bottomflux
       if landmask[i, j] == 1
         # Total groundwater balance in the cell
         totwater = qlat[i, j] - deeprech[i, j]
-        if qlat[i, j] != qlat[i, j]
+        if isnan(qlat[i, j])
           println("gran problema!", wtd[i, j], qlat[i, j], i, j)
         end
 

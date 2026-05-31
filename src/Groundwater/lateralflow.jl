@@ -43,7 +43,7 @@ function lateralflow(imax, jmax, js, je, wtd, qlat, fdepth, topo, landmask, delt
   kcell = zeros(eltype(wtd), size(wtd))
   head = zeros(eltype(wtd), size(wtd))
 
-  # gmmlateral flow calculation
+  # lateral flow calculation
   for j in max(js, 1):min(je, jmax)
     for i in 1:imax
       if fdepth[i, j] < 1.0e-6
@@ -78,11 +78,11 @@ function lateralflow(imax, jmax, js, je, wtd, qlat, fdepth, topo, landmask, delt
 end
 
 function lateralflow4(imax, jmax, js, je, wtd, qlat, fdepth, topo, landmask, deltat, area, klat, xlat, dxy)
-  d2r = 0.0174532925199
+  d2r = π / 180.0
   kcell = zeros(eltype(wtd), size(wtd))
   head = zeros(eltype(wtd), size(wtd))
 
-  # gmmlateral flow calculation
+  # lateral flow calculation
   for j in max(js, 1):min(je, jmax)
     for i in 1:imax
       if fdepth[i, j] < 1.0e-6

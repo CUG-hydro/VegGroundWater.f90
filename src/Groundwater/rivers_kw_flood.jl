@@ -123,8 +123,8 @@ function rivers_kw_flood(imax, js, je, deltat, dtlr, fd, bfd, qnew, qs, qrf, del
         snew = depth[i, j] * riverarea[i, j] + floodheight[i, j] * floodarea[i, j] + (dsnew + qext[i, j]) * dtlr
 
         # now redistribute water between river channel and floodplain and calculate new riverdepth and floodheight
-        if snew != snew
-          println("problem with snew", i, j, dsnew, floodheight[i, j], depth[i, j], qext[i, j])
+        if isnan(snew)
+          println("problem with snew ", i, " ", j, " ", dsnew, " ", floodheight[i, j], " ", depth[i, j], " ", qext[i, j])
         end
 
         if snew >= riverchannel[i, j]
@@ -139,8 +139,8 @@ function rivers_kw_flood(imax, js, je, deltat, dtlr, fd, bfd, qnew, qs, qrf, del
           end
         end
 
-        if depth[i, j] != depth[i, j]
-          println("problem with depth", i, j, qrf[i, j], qs[i, j], delsfcwat[i, j], qnew[i, j], floodheight[i, j])
+        if isnan(depth[i, j])
+          println("problem with depth ", i, " ", j, " ", qrf[i, j], " ", qs[i, j], " ", delsfcwat[i, j], " ", qnew[i, j], " ", floodheight[i, j])
         end
       end
     end
@@ -194,8 +194,6 @@ function rivers_kw_flood(imax, js, je, deltat, dtlr, fd, bfd, qnew, qs, qrf, del
             if slopeinst < 0.0
               slopeinst = slope[i, j]
             end
-            speed = (aa^(2.0 / 3.0)) * sqrt(slopeinst) / 0.03
-            speed = max(min(speed, length[i, j] / dtlr), 0.01)
           else
             slopeinst = slope[i, j]
           end
