@@ -1,7 +1,7 @@
-function update_deep_wtb(imax, jmax, js, je, nzg, slz, dz, soiltxt, wtd, bottomflux, rech, qslat, qlat, landmask, deltat, smoi, smoieq, smoiwtd, qsprings)
+function update_deep_wtb(imax, jmax, nzg, slz, dz, soiltxt, wtd, bottomflux, rech, qslat, qlat, landmask, deltat, smoi, smoieq, smoiwtd, qsprings)
   deeprech = zeros(size(wtd))
 
-  for j in js+1:je-1
+  for j in 2:jmax-1
     for i in 1:imax
       if landmask[i, j] == 1
         if wtd[i, j] < slz[1] - dz[1]
@@ -28,12 +28,9 @@ function update_deep_wtb(imax, jmax, js, je, nzg, slz, dz, soiltxt, wtd, bottomf
 
   bottomflux .= 0
 
-  for j in js+1:je-1
+  for j in 2:jmax-1
     for i in 1:imax
       if landmask[i, j] == 1
-        if i == 300 && j == 300
-          println("mirar qlat", qlat[i, j], qslat[i, j], wtd[i, j])
-        end
         totwater = qlat[i, j] - qslat[i, j] - deeprech[i, j]
         qspring = 0.0
         update_wtd(nzg, slz, dz, wtd[i, j], qspring, totwater, smoi[:, i, j], smoieq[:, i, j], soiltxt[:, i, j], smoiwtd[i, j])
