@@ -236,4 +236,5 @@ function update_wtd(nzg, z₋ₕ, dz, zwt, qspring, ∑, θ, θ_eq, soiltextures
     qspring = 0.0
   end
 
+  return zwt, qspring, θ_wtd
 end

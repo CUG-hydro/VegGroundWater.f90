@@ -2,7 +2,7 @@
 
 module ModuleWTable
 
-using ..module_rootdepth
+include(joinpath(@__DIR__, "..", "RootDepth", "module_rootdepth.jl"))
 
 const pi4 = 4π
 
@@ -81,7 +81,9 @@ function wtable(imax, jmax, js, je, nzg, slz, dz, area, soiltxt, wtd, bottomflux
         end
 
         qspring = 0.0
-        update_wtd(nzg, slz, dz, wtd[i, j], qspring, totwater, smoi[:, i, j], smoieq[:, i, j], soiltxt[:, i, j], smoiwtd[i, j])
+        wtd[i, j], qspring, smoiwtd[i, j] = update_wtd(
+          nzg, slz, dz, wtd[i, j], qspring, totwater, smoi[:, i, j], smoieq[:, i, j], soiltxt[:, i, j], smoiwtd[i, j]
+        )
 
         qsprings[i, j] += qspring * 1.0e3
       end
