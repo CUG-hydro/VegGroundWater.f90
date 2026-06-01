@@ -33,7 +33,9 @@ function update_deep_wtb(imax, jmax, nzg, slz, dz, soiltxt, wtd, bottomflux, rec
       if landmask[i, j] == 1
         totwater = qlat[i, j] - qslat[i, j] - deeprech[i, j]
         qspring = 0.0
-        update_wtd(nzg, slz, dz, wtd[i, j], qspring, totwater, smoi[:, i, j], smoieq[:, i, j], soiltxt[:, i, j], smoiwtd[i, j])
+        wtd[i, j], qspring, smoiwtd[i, j] = update_wtd(
+          nzg, slz, dz, wtd[i, j], qspring, totwater, smoi[:, i, j], smoieq[:, i, j], soiltxt[:, i, j], smoiwtd[i, j]
+        )
         qsprings[i, j] += qspring * 1e3
       end
     end
